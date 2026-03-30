@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<title>Poomismäng</title>
+<style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    #word { font-size: 2em; letter-spacing: 10px; }
+    #letters button { margin: 5px; padding: 10px 15px; font-size: 1em; }
+    #message { font-size: 1.5em; color: red; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Poomismäng</h1>
+<div id="hangman"></div>
+<div id="word"></div>
+<div id="letters"></div>
+<div id="message"></div>
+
+<script>
+const words = ["õun", "arvuti", "javascript", "brauser", "programmeerimine"];
+let selectedWord = words[Math.floor(Math.random() * words.length)];
+let guessedLetters = [];
+let wrongGuesses = 0;
+const maxWrong = 6;
+
+const wordDiv = document.getElementById("word");
+const lettersDiv = document.getElementById("letters");
+const hangmanDiv = document.getElementById("hangman");
+const messageDiv = document.getElementById("message");
+
+// Näita tühje kohti
+function displayWord() {
+    wordDiv.textContent = selectedWord.split('').map(letter => guessedLetters.includes(letter) ? letter : "_").join(' ');
+}
+
+// Loo tähe nupud
+function createLetterButtons() {
+    lettersDiv.innerHTML = '';
+    for (let i = 97; i <= 122; i++) { // a-z
+        let letter = String.fromCharCode(i);
+        let btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.onclick = () => guess(letter);
+        lettersDiv.appendChild(btn);
+    }
+}
+
+function updateHangman() {
+    hangmanDiv.textContent = "Valeid katseid: " + wrongGuesses + "/" + maxWrong;
+}
+
+function guess(letter) {
+    if (guessedLetters.includes(letter)) return;
+    guessedLetters.push(letter);
+
+    if (!selectedWord.includes(letter)) {
+        wrongGuesses++;
+        updateHangman();
+    }
+
+    displayWord();
+    checkGameOver();
+}
+
+function checkGameOver() {
+    if (!wordDiv.textContent.includes("_")) {
+        messageDiv.textContent = "Õnnitleme! Sa võitsid!";
+        lettersDiv.innerHTML = '';
+    } else if (wrongGuesses >= maxWrong) {
+        messageDiv.textContent = "Mäng läbi! Õige sõna oli: " + selectedWord;
+        lettersDiv.innerHTML = '';
+    }
+}
+
+// Alusta mängu
+displayWord();
+createLetterButtons();
+updateHangman();
+</script>
+
+</body>
+</html>
